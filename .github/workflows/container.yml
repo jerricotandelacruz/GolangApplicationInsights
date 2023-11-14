@@ -1,4 +1,4 @@
-name: Deploy GH MGMT Container
+name: Deploy docker build and push
 
 on:
     workflow_dispatch:
