@@ -24,12 +24,29 @@ param appServiceSettings object
 ])
 param sku string = 'P1v2'
 
+resource appServiceLogAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: projectName
+  location: location
+  properties: {
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+    sku: {
+      name: 'Standard'
+    }
+  }
+}
+
 resource appServiceApplicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: projectName
   location: location
   kind: 'web'
   properties: {
     Application_Type: 'web'
+    RetentionInDays: 90
+    WorkspaceResourceId: appServiceLogAnalytics.id
+    IngestionMode: 'LogAnalytics'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
   }
 }
 
