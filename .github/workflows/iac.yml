@@ -1,0 +1,39 @@
+name: Deploy iac workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+    deploy-app-service:
+      runs-on: ubuntu-latest
+
+      steps:
+
+        - uses: actions/checkout@v2
+
+        - uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        - name: SUBSTITUTE VARIABLES
+          uses: microsoft/variable-substitution@v1 
+          with:
+            files: ./.bicep/parameters.json
+          env:
+            parameters.imageName.value: ${{ vars.APP_SERVICE }}
+            parameters.appServicePlanName.value : ${{ vars.APP_SERVICE_PLAN }}
+            parameters.projectName.value : ${{ vars.APP_SERVICE }}
+            parameters.containerServer.value : ${{ secrets.ACR_REGISTRY }}
+            parameters.appServiceSettings.value.DOCKER_REGISTRY_SERVER_URL : https://${{ secrets.ACR_REGISTRY }}
+            parameters.appServiceSettings.value.DOCKER_REGISTRY_SERVER_USERNAME : ${{ secrets.ACR_USERNAME }} 
+            parameters.appServiceSettings.value.DOCKER_REGISTRY_SERVER_PASSWORD : ${{ secrets.ACR_PASSWORD }} 
+
+        - name: Deploy App Service Plan and Web App
+          uses: azure/arm-deploy@v1
+          with:
+            subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS)['subscriptionId'] }}
+            resourceGroupName: ${{ secrets.AZURE_RG }}
+            template: ./.bicep/deployAppService.bicep
+            parameters: ./.bicep/parameters.json
+            failOnStdErr: false
+            scope: resourcegroup
