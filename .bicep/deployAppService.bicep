@@ -40,7 +40,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   kind: 'linux'
 }
 
-resource appService 'Microsoft.Web/sites@2020-06-01' = {
+resource appService 'Microsoft.Web/sites@2022-09-01' = {
   name: projectName
   location: location
   identity: {
@@ -68,17 +68,6 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
   properties: {
     APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
   }
-  dependsOn: [
-    appServiceSiteExtension
-  ]
-}
-
-resource appServiceSiteExtension 'Microsoft.Web/sites/siteextensions@2020-06-01' = {
-  parent: appService
-  name: 'Microsoft.ApplicationInsights.AzureWebSites'
-  dependsOn: [
-    appInsights
-  ]
 }
 
 resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
@@ -105,8 +94,8 @@ resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
   }
 }
 
-var appInsightName = toLower('appi-${projectName}')
-var logAnalyticsName = toLower('la-${projectName}')
+var appInsightName = toLower('appinsights-${projectName}')
+var logAnalyticsName = toLower('loganalytics-${projectName}')
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightName
