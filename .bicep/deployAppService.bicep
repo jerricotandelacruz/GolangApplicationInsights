@@ -33,12 +33,23 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   sku: {
     name: sku
   }
+  tags: {
+    displayName: 'HostingPlan'
+    ProjectName: projectName
+  }
   kind: 'linux'
 }
 
-resource appService 'Microsoft.Web/sites@2022-03-01' = {
+resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: projectName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  tags: {
+    displayName: 'Website'
+    ProjectName: projectName
+  }
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
