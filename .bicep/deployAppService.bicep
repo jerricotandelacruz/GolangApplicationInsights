@@ -30,9 +30,6 @@ resource appServiceLogAnalytics 'Microsoft.OperationalInsights/workspaces@2022-1
   properties: {
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
-    sku: {
-      name: 'Standard'
-    }
   }
 }
 
