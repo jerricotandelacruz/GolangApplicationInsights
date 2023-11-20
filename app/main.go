@@ -55,6 +55,15 @@ func main() {
 	client.TrackException(dummyException)
 	client.TrackException("[BASIC]TRACK EXCEPTION (STRING)")
 
+	TrackEvent()
+	TrackMetrict()
+	TrackTrace()
+	TrackRequest()
+	TrackDependency()
+	TrackException()
+	TrackAvailability()
+	TrackPageView()
+
 	http.HandleFunc("/", HelloServer)
 	http.ListenAndServe(":8080", nil)
 }
@@ -216,7 +225,7 @@ func TrackAvailability() {
 	client.Track(availability)
 }
 
-func TrackPageViews() {
+func TrackPageView() {
 	// SET INSTRUMENTATION KEY
 	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
 
