@@ -270,6 +270,9 @@ func TrackGroupEvent() {
 	// This request will have all context tags above.
 	client.Track(req)
 
+	client.Context().Tags.Operation().SetId(client.Context().Tags.Operation().GetId())
+	client.Context().Tags.Operation().SetParentId(client.Context().Tags.Operation().GetId())
+
 	var duration time.Duration = 10
 	request := appinsights.NewRequestTelemetry("GET", "https://example.com", duration, "200")
 
