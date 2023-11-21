@@ -259,6 +259,9 @@ func TrackGroupEvent() {
 	hostname, _ := os.Hostname()
 	client.Context().Tags.Cloud().SetRoleInstance(hostname)
 
+	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946cf8")
+	client.Context().Tags.Operation().SetParentId("e49635cc-007d-4006-b661-dd23a5946cf8")
+
 	// Make a request to fiddle with the telemetry's context
 	req := appinsights.NewRequestTelemetry("GET", "http://server/path", time.Millisecond, "200")
 
@@ -269,9 +272,6 @@ func TrackGroupEvent() {
 
 	// This request will have all context tags above.
 	client.Track(req)
-
-	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946cf8")
-	client.Context().Tags.Operation().SetParentId("e49635cc-007d-4006-b661-dd23a5946cf8")
 
 	var duration time.Duration = 10
 	request := appinsights.NewRequestTelemetry("GET", "https://example.com", duration, "200")
