@@ -12,6 +12,28 @@ import (
 )
 
 func main() {
+	// TrackBasicTransactions()
+
+	// TrackEvent()
+	// TrackMetric()
+	// TrackTrace()
+	// TrackRequest()
+	// TrackDependency()
+	// TrackException()
+	// TrackAvailability()
+	// TrackPageView()
+
+	TrackGroupEvent()
+
+	http.HandleFunc("/", HelloServer)
+	http.ListenAndServe(":8080", nil)
+}
+
+func HelloServer(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+func TrackBasicTransactions() {
 	// SET INSTRUMENTATION KEY
 	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
 
@@ -54,22 +76,6 @@ func main() {
 
 	client.TrackException(dummyException)
 	client.TrackException("[BASIC]TRACK EXCEPTION (STRING)")
-
-	TrackEvent()
-	TrackMetrict()
-	TrackTrace()
-	TrackRequest()
-	TrackDependency()
-	TrackException()
-	TrackAvailability()
-	TrackPageView()
-
-	http.HandleFunc("/", HelloServer)
-	http.ListenAndServe(":8080", nil)
-}
-
-func HelloServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 }
 
 func TrackEvent() {
@@ -82,7 +88,7 @@ func TrackEvent() {
 	client.Track(event)
 }
 
-func TrackMetrict() {
+func TrackMetric() {
 	// SET INSTRUMENTATION KEY
 	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
 
@@ -238,4 +244,29 @@ func TrackPageView() {
 
 	// Track
 	client.Track(pageview)
+}
+
+func TrackGroupEvent() {
+	// SET INSTRUMENTATION KEY
+	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+
+	// Set role instance name globally -- this is usually the
+	// name of the service submitting the telemetry
+	client.Context().Tags.Cloud().SetRole("my_go_server")
+
+	// Set the role instance to the host name.  Note that this is
+	// done automatically by the SDK.
+	hostname, _ := os.Hostname()
+	client.Context().Tags.Cloud().SetRoleInstance(hostname)
+
+	// Make a request to fiddle with the telemetry's context
+	req := appinsights.NewRequestTelemetry("GET", "http://server/path", time.Millisecond, "200")
+
+	// Set the account ID context tag, for this telemetry item
+	// only.  The following are equivalent:
+	req.Tags.User().SetAccountId("<user account retrieved from request>")
+	req.Tags[contracts.UserAccountId] = "<user account retrieved from request>"
+
+	// This request will have all context tags above.
+	client.Track(req)
 }
