@@ -269,4 +269,34 @@ func TrackGroupEvent() {
 
 	// This request will have all context tags above.
 	client.Track(req)
+
+	var duration time.Duration = 10
+	request := appinsights.NewRequestTelemetry("GET", "https://example.com", duration, "200")
+
+	// Note that the timestamp will be set to time.Now() minus the
+	// specified duration.  This can be overridden by either manually
+	// setting the Timestamp and Duration fields, or with MarkTime:
+	requestStartTime := time.Now().Add(-duration)
+	requestEndTime := time.Now()
+	request.MarkTime(requestStartTime, requestEndTime)
+
+	// Source of request
+	request.Source = "https://example-source.com"
+
+	// Success is normally inferred from the responseCode, but can be overridden:
+	request.Success = true
+
+	// Request ID's are randomly generated GUIDs, but this can also be overridden:
+	request.Id = "REQUIREDID20231120"
+
+	// Custom properties and measurements can be set here
+	request.Properties["user-agent"] = "SAMPLE PROPERTY [PROPERTY NAME: user-agent, VALUE: request headers user-agent]"
+	request.Measurements["POST size"] = float64(999.999)
+
+	// Context tags become more useful here as well
+	request.Tags.Session().SetId("SESSIONID20231120")
+	request.Tags.User().SetAccountId("USERID20231120")
+
+	// Finally track it
+	client.Track(request)
 }
