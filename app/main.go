@@ -20,7 +20,7 @@ func main() {
 func TrackGroupWithHerierchy() {
 	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
 
-	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946cf8")
+	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946cf5")
 
 	firstEvent := appinsights.NewEventTelemetry("1ST EVENT")
 	firstEvent.Properties["property"] = "1STPROPERTY"
