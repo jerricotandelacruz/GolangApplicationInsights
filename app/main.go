@@ -11,7 +11,9 @@ import (
 func main() {
 	appinsights_wrapper.Init(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
 
-	RunFirst()
+	for i := 0; i < 10; i++ {
+		RunFirst(i)
+	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
@@ -19,38 +21,36 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func RunFirst() {
+func RunFirst(num int) {
 	client := appinsights_wrapper.Client()
 
-	client.StartOperation("OPERATION CORRELATION...")
+	client.StartOperation(fmt.Sprintf("OPERATION CORRELATION:%d", num))
 
-	client.TrackEvent("FIRST")
+	client.TrackEvent(fmt.Sprintf("FIRST NO:%d", num))
 
-	RunSecond()
+	RunSecond(num)
 
-	RunThird()
+	RunThird(num)
 
 	client.EndOperation()
 }
 
-func RunSecond() {
+func RunSecond(num int) {
 	client := appinsights_wrapper.Client()
 
-	client.TrackEvent("SECOND")
+	client.TrackEvent(fmt.Sprintf("SECOND NO:%d", num))
 
-	RunSecondFirst()
+	RunSecondFirst(num)
 }
 
-func RunSecondFirst() {
+func RunSecondFirst(num int) {
 	client := appinsights_wrapper.Client()
 
-	client.TrackEvent("SECOND FIRST")
+	client.TrackEvent(fmt.Sprintf("SECOND FIRST NO:%d", num))
 }
 
-func RunThird() {
+func RunThird(num int) {
 	client := appinsights_wrapper.Client()
 
-	client.TrackEvent("THIRD")
-
-	RunSecondFirst()
+	client.TrackEvent(fmt.Sprintf("THIRD NO:%d", num))
 }
