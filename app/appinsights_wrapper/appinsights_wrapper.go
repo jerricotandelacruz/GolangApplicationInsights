@@ -6,7 +6,10 @@ import (
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 )
 
-var tc *appinsights.TelemetryConfiguration
+var (
+	tc *appinsights.TelemetryConfiguration
+	c  *telemetryClient
+)
 
 type telemetryClient struct {
 	appinsights.TelemetryClient
@@ -14,12 +17,13 @@ type telemetryClient struct {
 
 func Init(instrumentationKey string) {
 	tc = appinsights.NewTelemetryConfiguration(instrumentationKey)
-}
-
-func NewAppInsightsClient() *telemetryClient {
-	return &telemetryClient{
+	c = &telemetryClient{
 		TelemetryClient: appinsights.NewTelemetryClientFromConfig(tc),
 	}
+}
+
+func Client() *telemetryClient {
+	return c
 }
 
 func (c *telemetryClient) StartOperation(name string) {

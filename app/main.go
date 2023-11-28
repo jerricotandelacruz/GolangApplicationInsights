@@ -20,7 +20,7 @@ func main() {
 }
 
 func RunFirst() {
-	client := appinsights_wrapper.NewAppInsightsClient()
+	client := appinsights_wrapper.Client()
 
 	client.StartOperation("OPERATION CORRELATION...")
 
@@ -34,7 +34,7 @@ func RunFirst() {
 }
 
 func RunSecond() {
-	client := appinsights_wrapper.NewAppInsightsClient()
+	client := appinsights_wrapper.Client()
 
 	client.TrackEvent("SECOND")
 
@@ -42,13 +42,13 @@ func RunSecond() {
 }
 
 func RunSecondFirst() {
-	client := appinsights_wrapper.NewAppInsightsClient()
+	client := appinsights_wrapper.Client()
 
 	client.TrackEvent("SECOND FIRST")
 }
 
 func RunThird() {
-	client := appinsights_wrapper.NewAppInsightsClient()
+	client := appinsights_wrapper.Client()
 
 	client.TrackEvent("THIRD")
 
