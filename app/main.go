@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/microsoft/ApplicationInsights-Go/appinsights"
+	"github.com/jerricodelacruz/goappinsights/appinsights_wrapper"
 )
 
 func main() {
-	TrackGroupWithHerierchy()
+	appinsights_wrapper.Init(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+
+	RunFirst()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
@@ -17,26 +19,38 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func TrackGroupWithHerierchy() {
-	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+func RunFirst() {
+	client := appinsights_wrapper.NewAppInsightsClient()
 
-	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946ca5")
+	client.StartOperation("OPERATION CORRELATION...")
 
-	firstEvent := appinsights.NewEventTelemetry("1ST EVENT")
-	firstEvent.Properties["property"] = "1STPROPERTY"
-	client.Track(firstEvent)
+	client.TrackEvent("FIRST")
 
-	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946cb5")
-	client.Context().Tags.Operation().SetParentId("e49635cc-007d-4006-b661-dd23a5946ca5")
+	RunSecond()
 
-	secondEvent := appinsights.NewEventTelemetry("2ND EVENT SUB OF 1ST EVENT")
-	secondEvent.Properties["property"] = "2NDPROPERTY"
-	client.Track(secondEvent)
+	RunThird()
 
-	client.Context().Tags.Operation().SetId("e49635cc-007d-4006-b661-dd23a5946cc5")
-	client.Context().Tags.Operation().SetParentId("e49635cc-007d-4006-b661-dd23a5946cc5")
+	client.EndOperation()
+}
 
-	thirdEvent := appinsights.NewEventTelemetry("3RD EVENT")
-	thirdEvent.Properties["property"] = "3RDPROPERTY"
-	client.Track(thirdEvent)
+func RunSecond() {
+	client := appinsights_wrapper.NewAppInsightsClient()
+
+	client.TrackEvent("SECOND")
+
+	RunSecondFirst()
+}
+
+func RunSecondFirst() {
+	client := appinsights_wrapper.NewAppInsightsClient()
+
+	client.TrackEvent("SECOND FIRST")
+}
+
+func RunThird() {
+	client := appinsights_wrapper.NewAppInsightsClient()
+
+	client.TrackEvent("THIRD")
+
+	RunSecondFirst()
 }

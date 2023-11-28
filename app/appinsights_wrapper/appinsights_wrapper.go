@@ -1,28 +1,36 @@
 package appinsights_wrapper
 
 import (
+	"fmt"
+
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 )
 
-// AppInsightsClient holds the configuration and the AI Telemetry client.
-type AppInsightsClient struct {
-	InstrumentationKey string
-	Client             appinsights.TelemetryClient
+var tc *appinsights.TelemetryConfiguration
+
+type telemetryClient struct {
+	appinsights.TelemetryClient
 }
 
-// NewAppInsightsClient creates a new AppInsightsClient with the given instrumentation key.
-func NewAppInsightsClient(instrumentationKey string) *AppInsightsClient {
-	client := appinsights.NewTelemetryClient(instrumentationKey)
-	return &AppInsightsClient{
-		InstrumentationKey: instrumentationKey,
-		Client:             client,
+func Init(instrumentationKey string) {
+	tc = appinsights.NewTelemetryConfiguration(instrumentationKey)
+}
+
+func NewAppInsightsClient() *telemetryClient {
+	return &telemetryClient{
+		TelemetryClient: appinsights.NewTelemetryClientFromConfig(tc),
 	}
 }
 
-// SetInstrumentationKey sets the instrumentation key for the AppInsightsClient.
-func (c *AppInsightsClient) SetInstrumentationKey(instrumentationKey string) {
-	c.InstrumentationKey = instrumentationKey
-	c.Client = appinsights.NewTelemetryClient(instrumentationKey)
+func (c *telemetryClient) StartOperation(name string) {
+	c.Context().Tags.Operation().SetId(newUUID().String())
+	c.Context().Tags.Operation().SetName(name)
+	fmt.Printf("START OPERATION | ID:%s", c.Context().Tags.Operation().GetId())
 }
 
-// Other functions, methods, and types can be added here based on your requirements.
+func (c *telemetryClient) EndOperation() {
+	fmt.Printf("END OPERATION | ID:%s", c.Context().Tags.Operation().GetId())
+	for k := range c.Context().Tags.Operation() {
+		delete(c.Context().Tags.Operation(), k)
+	}
+}
