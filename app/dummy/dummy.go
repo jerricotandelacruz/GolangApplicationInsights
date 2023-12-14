@@ -2,7 +2,9 @@ package dummy
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
@@ -278,4 +280,13 @@ func TrackGroupEvent() {
 
 	// Finally track it
 	client.Track(request)
+}
+
+func RunTimeOutFirstSample() {
+	fmt.Println("OUT FIRST")
+	pc, file, line, ok := runtime.Caller(0)
+	fmt.Println("PC : ", pc)
+	fmt.Println("FILE : ", file)
+	fmt.Println("LINE : ", line)
+	fmt.Println("OK : ", ok)
 }

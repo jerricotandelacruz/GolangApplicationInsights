@@ -1,84 +1,41 @@
 package main
 
 import (
-	"fmt"
-	"math/rand"
-	"net/http"
-	"os"
-	"time"
+	"log"
 
-	"github.com/jerricodelacruz/goappinsights/appinsights_wrapper"
+	"github.com/jerricodelacruz/goappinsights/init_sample"
+	"github.com/jerricodelacruz/goappinsights/init_sample_second"
 )
 
-func f(num int) {
-	for i := 0; i < 5; i++ {
-		RunFirst(num, i)
-
-		source := rand.NewSource(time.Now().UnixNano())
-		randomGenerator := rand.New(source)
-		randomNumber := randomGenerator.Intn(5) + 1
-		duration := time.Duration(randomNumber) * time.Second
-		time.Sleep(duration)
-	}
+func init() {
+	log.Println("INIT")
 }
 
 func main() {
-	appinsights_wrapper.Init(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+	log.Println("MAIN")
 
-	for i := 0; i < 3; i++ {
-		go f(i)
-	}
+	init_sample.HelloWorld()
+	init_sample_second.HelloWorld()
+	// // Set environment variables
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Print(err.Error())
+	// }
 
-	f(4)
+	// muxRouter := mux.NewRouter()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
-	})
-	http.ListenAndServe(":8080", nil)
-}
+	// appinsights_wrapper.Init(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
 
-func RunFirst(parentNum, num int) {
-	client := appinsights_wrapper.Client()
+	// muxRouter.HandleFunc("/appinsights/{operationName}", func(w http.ResponseWriter, r *http.Request) {
+	// 	vars := mux.Vars(r)
 
-	client.StartOperation(fmt.Sprintf("OPERATION CORRELATION %d:::%d", parentNum, num))
+	// 	operationName := vars["operationName"]
 
-	client.TrackEvent(fmt.Sprintf("FIRST NO:%d:::%d", parentNum, num))
+	// 	fmt.Fprintf(w, "CURRENT OPERATION %s!", operationName)
+	// 	RunEvent(operationName)
+	// })
 
-	source := rand.NewSource(time.Now().UnixNano())
-	randomGenerator := rand.New(source)
-	randomNumber := randomGenerator.Intn(5) + 1
-	duration := time.Duration(randomNumber) * time.Second
-	time.Sleep(duration)
+	// http.Handle("/", muxRouter)
 
-	RunSecond(parentNum, num)
-
-	RunThird(parentNum, num)
-
-	client.EndOperation()
-}
-
-func RunSecond(parentNum, num int) {
-	client := appinsights_wrapper.Client()
-
-	client.TrackEvent(fmt.Sprintf("SECOND NO:%d:::%d", parentNum, num))
-
-	source := rand.NewSource(time.Now().UnixNano())
-	randomGenerator := rand.New(source)
-	randomNumber := randomGenerator.Intn(5) + 1
-	duration := time.Duration(randomNumber) * time.Second
-	time.Sleep(duration)
-
-	RunSecondFirst(parentNum, num)
-}
-
-func RunSecondFirst(parentNum, num int) {
-	client := appinsights_wrapper.Client()
-
-	client.TrackEvent(fmt.Sprintf("SECOND FIRST NO:%d:::%d", parentNum, num))
-}
-
-func RunThird(parentNum, num int) {
-	client := appinsights_wrapper.Client()
-
-	client.TrackEvent(fmt.Sprintf("THIRD NO:%d:::%d", parentNum, num))
+	// http.ListenAndServe(":8080", muxRouter)
 }
