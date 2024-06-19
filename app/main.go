@@ -31,7 +31,7 @@ func main() {
 
 	// 	operationName := vars["operationName"]
 
-	// 	fmt.Fprintf(w, "CURRENT OPERATION %s!", operationName)
+	// 	fmt.Fprintf(w, "CURRENT OPERATION %s! : SECRETS : %s", operationName, "***REMOVED***")
 	// 	RunEvent(operationName)
 	// })
 
